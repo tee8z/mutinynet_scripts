@@ -1,0 +1,12 @@
+[Unit]
+Description=LND Service 2
+After=network.target
+
+[Service]
+ExecStart=sudo /home/pi/lnd/lnd --lnddir=/mount/ssd/lnd/signet2 
+Restart=always
+User=root      
+Group=root       
+
+[Install]
+WantedBy=default.target

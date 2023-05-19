@@ -1,0 +1,12 @@
+[Unit]
+Description=Surge Service
+After=network.target
+
+[Service]
+ExecStart=sudo /home/pi/agent/surge --config=/mount/ssd/surge/signet/surge.conf 
+Restart=always
+User=root      
+Group=root       
+
+[Install]
+WantedBy=default.target

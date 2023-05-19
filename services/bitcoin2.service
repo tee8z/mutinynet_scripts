@@ -1,0 +1,12 @@
+[Unit]
+Description=Bitcoin Core Service 2
+After=network.target
+
+[Service]
+ExecStart=sudo /home/pi/bitcoin/bitcoin/src/bitcoind -conf=/mount/ssd/bitcoin/signet2/bitcoin.conf
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=default.target
