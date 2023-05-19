@@ -3,10 +3,10 @@ Description=LND Service 3
 After=network.target
 
 [Service]
-ExecStart=sudo /home/pi/lnd/lnd --lnddir=/mount/ssd/lnd/signet3 
+ExecStart=pi /home/pi/lnd/lnd --lnddir=/mount/ssd/lnd/signet3 
 Restart=always
-User=root      
-Group=root       
+User=pi      
+Group=pi       
 
 [Install]
 WantedBy=default.target

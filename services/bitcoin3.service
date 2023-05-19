@@ -3,10 +3,10 @@ Description=Bitcoin Core Service 3
 After=network.target
 
 [Service]
-ExecStart=sudo /home/pi/bitcoin/bitcoin/src/bitcoind -conf=/mount/ssd/bitcoin/signet3/bitcoin.conf
+ExecStart=pi /home/pi/bitcoin/bitcoin/src/bitcoind -conf=/mount/ssd/bitcoin/signet3/bitcoin.conf
 Restart=always
-User=root
-Group=root
+User=pi
+Group=pi
 
 [Install]
 WantedBy=default.target
