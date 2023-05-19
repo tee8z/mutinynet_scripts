@@ -113,6 +113,5 @@ amp() {
 keysend
 amp
 invoice
-wait
 
 printf "\n%s\n" "completed send_payments.sh"
