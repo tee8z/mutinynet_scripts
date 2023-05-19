@@ -28,11 +28,53 @@ lnd_3_config="--lnddir=/mount/ssd/lnd/signet3 --rpcserver=localhost:10011 --maca
 addr_lnd_3=$($lncli $lnd_3_config getinfo | jq -r '.uris[0]')
 echo $addr_lnd_3
 
-connect_1_to_2=$($lncli $lnd_surge_config connect $add_lnd_2)
+
+lnd_4_config="--lnddir=/mount/ssd/lnd/signet4 --rpcserver=localhost:10012 --macaroonpath=/mount/ssd/lnd/signet4/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_4=$($lncli $lnd_4_config getinfo | jq -r '.uris[0]')
+echo $addr_lnd_4
+
+lnd_5_config="--lnddir=/mount/ssd/lnd/signet5 --rpcserver=localhost:10013 --macaroonpath=/mount/ssd/lnd/signet5/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_5=$($lncli $lnd_5_config getinfo | jq -r '.uris[0]')
+echo $addr_lnd_5
+
+lnd_6_config="--lnddir=/mount/ssd/lnd/signet6 --rpcserver=localhost:10014 --macaroonpath=/mount/ssd/lnd/signet6/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_6=$($lncli $lnd_6_config getinfo | jq -r '.uris[0]')
+echo $addr_lnd_6
+
+
+connect_1_to_2=$($lncli $lnd_surge_config connect $addr_lnd_2)
 echo $connect_1_to_2
 
-connect_2_to_3=$($lncli $lnd_2_config connect $add_lnd_3)
+connect_2_to_3=$($lncli $lnd_2_config connect $addr_lnd_3)
 echo $connect_2_to_3
 
-connect_3_to_1=$($lncli $lnd_3_config connect $add_lnd_surge)
+connect_3_to_1=$($lncli $lnd_3_config connect $addr_lnd_surge)
 echo $connect_3_to_1
+
+connect_4_to_2=$($lncli $lnd_4_config connect $addr_lnd_2)
+echo $connect_4_to_2
+
+connect_6_to_5=$($lncli $lnd_6_config connect $addr_lnd_5)
+echo $connect_6_to_5
+
+connect_5_to_3=$($lncli $lnd_5_config connect $addr_lnd_3)
+echo $connect_5_to_3
+
+connect_4_to_6=$($lncli $lnd_4_config connect $addr_lnd_6)
+echo $connect_4_to_6
+
+
+connect_1_to_5=$($lncli $lnd_surge_config connect $addr_lnd_5)
+echo $connect_1_to_5
+
+connect_2_to_6=$($lncli $lnd_2_config connect $addr_lnd_6)
+echo $connect_2_to_6
+
+connect_4_to_2=$($lncli $lnd_4_config connect $addr_lnd_2)
+echo $connect_4_to_2
+
+connect_1_to_6=$($lncli $lnd_surge_config connect $addr_lnd_6)
+echo $connect_1_to_6
+
+connect_4_to_3=$($lncli $lnd_4_config connect $addr_lnd_3)
+echo $connect_4_to_3

@@ -41,3 +41,33 @@ tx_3=$(curl -X POST \
   -d '{"sats":"'"$amt_sats"'","address":"'"$addr_3"'"}' | jq -r '.txid')
 echo ""
 echo "lnd_3 address" $addr_3 " txid" $tx_3 " amt_sats" $amt_sats
+
+
+lnd_4_config="--lnddir=/mount/ssd/lnd/signet4 --rpcserver=localhost:10012 --macaroonpath=/mount/ssd/lnd/signet4/data/chain/bitcoin/signet/admin.macaroon"
+addr_4=$($lncli $lnd_4_config newaddress p2tr | jq -r '.address')
+tx_4=$(curl -X POST \
+  https://faucet.mutinynet.com/api/faucet \
+  -H 'Content-Type: application/json' \
+  -d '{"sats":"'"$amt_sats"'","address":"'"$addr_4"'"}' | jq -r '.txid')
+echo ""
+echo "lnd_4 address" $addr_4 " txid" $tx_4 " amt_sats" $amt_sats
+
+
+lnd_5_config="--lnddir=/mount/ssd/lnd/signet5 --rpcserver=localhost:10013 --macaroonpath=/mount/ssd/lnd/signet5/data/chain/bitcoin/signet/admin.macaroon"
+addr_5=$($lncli $lnd_5_config newaddress p2tr | jq -r '.address')
+tx_5=$(curl -X POST \
+  https://faucet.mutinynet.com/api/faucet \
+  -H 'Content-Type: application/json' \
+  -d '{"sats":"'"$amt_sats"'","address":"'"$addr_5"'"}' | jq -r '.txid')
+echo ""
+echo "lnd_5 address" $addr_5 " txid" $tx_5 " amt_sats" $amt_sats
+
+
+lnd_6_config="--lnddir=/mount/ssd/lnd/signet6 --rpcserver=localhost:10014 --macaroonpath=/mount/ssd/lnd/signet6/data/chain/bitcoin/signet/admin.macaroon"
+addr_6=$($lncli $lnd_6_config newaddress p2tr | jq -r '.address')
+tx_6=$(curl -X POST \
+  https://faucet.mutinynet.com/api/faucet \
+  -H 'Content-Type: application/json' \
+  -d '{"sats":"'"$amt_sats"'","address":"'"$addr_6"'"}' | jq -r '.txid')
+echo ""
+echo "lnd_6 address" $addr_6 " txid" $tx_6 " amt_sats" $amt_sats

@@ -12,6 +12,18 @@ lnd_3_config="--lnddir=/mount/ssd/lnd/signet3 --rpcserver=localhost:10011 --maca
 addr_lnd_3=$($lncli $lnd_3_config getinfo | jq '.identity_pubkey' -r)
 echo $addr_lnd_3
 
+lnd_4_config="--lnddir=/mount/ssd/lnd/signet4 --rpcserver=localhost:10012 --macaroonpath=/mount/ssd/lnd/signet4/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_4=$($lncli $lnd_4_config getinfo | jq '.identity_pubkey' -r)
+echo $addr_lnd_4
+
+lnd_5_config="--lnddir=/mount/ssd/lnd/signet5 --rpcserver=localhost:10013 --macaroonpath=/mount/ssd/lnd/signet5/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_5=$($lncli $lnd_5_config getinfo | jq '.identity_pubkey' -r)
+echo $addr_lnd_5
+
+lnd_6_config="--lnddir=/mount/ssd/lnd/signet6 --rpcserver=localhost:10014 --macaroonpath=/mount/ssd/lnd/signet6/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_6=$($lncli $lnd_6_config getinfo | jq '.identity_pubkey' -r)
+echo $addr_lnd_6
+
 
 function generate_node() {
   #printf "%s\n" "creating a node"
@@ -19,7 +31,10 @@ function generate_node() {
   nodes=(
     "$lnd_surge_config|"
     "$lnd_2_config|"
-    "$lnd_3_config"
+    "$lnd_3_config|"
+    "$lnd_4_config|"
+    "$lnd_5_config|"
+    "$lnd_6_config|"
   )
   num_of_nodes=${#nodes[@]}
   if [[ "$1" == "-s" ]]; then
@@ -110,8 +125,10 @@ amp() {
    printf "completed send amp (many htlcs) from %s to %s" $source $destination
 }
 
-keysend
-amp
-invoice
+keysend &
+amp &
+invoice &
+
+wait
 
 printf "\n%s\n" "completed send_payments.sh"
