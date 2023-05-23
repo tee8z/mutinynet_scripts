@@ -128,6 +128,7 @@ open_channel(){
    echo $connect_as_peer
    open_channel=$($lncli $source openchannel $destination $channel_sats)
    echo $open_channel
+   echo "opened channel"
 }
 
 
@@ -144,5 +145,6 @@ close_channel(){
    echo "closed channel"
 }
 
+open_channel
 close_channel
 
