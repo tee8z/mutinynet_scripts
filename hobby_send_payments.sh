@@ -1,40 +1,32 @@
 #!/bin/bash
 lncli="/home/pi/lnd/lncli"
-lnd_surge_config="--lnddir=/mount/ssd/lnd/signet --macaroonpath=/mount/ssd/lnd/signet/data/chain/bitcoin/signet/admin.macaroon"
-addr_lnd_surge=$($lncli $lnd_surge_config getinfo | jq '.identity_pubkey' -r)
-echo $addr_lnd_surge
+#lnd_2_config="--lnddir=/mount/ssd/lnd/signet2 --rpcserver=localhost:10011 --macaroonpath=/mount/ssd/lnd/signet2/data/chain/bitcoin/signet/admin.macaroon"
+#addr_lnd_2=$($lncli $lnd_2_config getinfo | jq '.identity_pubkey' -r)
+#echo $addr_lnd_2
 
-lnd_2_config="--lnddir=/mount/ssd/lnd/signet2 --rpcserver=localhost:10010 --macaroonpath=/mount/ssd/lnd/signet2/data/chain/bitcoin/signet/admin.macaroon"
-addr_lnd_2=$($lncli $lnd_2_config getinfo | jq '.identity_pubkey' -r)
-echo $addr_lnd_2
-
-lnd_3_config="--lnddir=/mount/ssd/lnd/signet3 --rpcserver=localhost:10011 --macaroonpath=/mount/ssd/lnd/signet3/data/chain/bitcoin/signet/admin.macaroon"
-addr_lnd_3=$($lncli $lnd_3_config getinfo | jq '.identity_pubkey' -r)
-echo $addr_lnd_3
 
 lnd_4_config="--lnddir=/mount/ssd/lnd/signet4 --rpcserver=localhost:10012 --macaroonpath=/mount/ssd/lnd/signet4/data/chain/bitcoin/signet/admin.macaroon"
 addr_lnd_4=$($lncli $lnd_4_config getinfo | jq '.identity_pubkey' -r)
 echo $addr_lnd_4
 
+
 lnd_5_config="--lnddir=/mount/ssd/lnd/signet5 --rpcserver=localhost:10013 --macaroonpath=/mount/ssd/lnd/signet5/data/chain/bitcoin/signet/admin.macaroon"
 addr_lnd_5=$($lncli $lnd_5_config getinfo | jq '.identity_pubkey' -r)
 echo $addr_lnd_5
 
-lnd_6_config="--lnddir=/mount/ssd/lnd/signet6 --rpcserver=localhost:10014 --macaroonpath=/mount/ssd/lnd/signet6/data/chain/bitcoin/signet/admin.macaroon"
-addr_lnd_6=$($lncli $lnd_6_config getinfo | jq '.identity_pubkey' -r)
-echo $addr_lnd_6
 
+lnd_7_config="--lnddir=/mount/ssd/lnd/signet7 --rpcserver=localhost:10015 --macaroonpath=/mount/ssd/lnd/signet7/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_7=$($lncli $lnd_7_config getinfo | jq '.identity_pubkey' -r)
+echo $addr_lnd_7
 
 function generate_node() {
   #printf "%s\n" "creating a node"
   IFS='|'
   nodes=(
-    "$lnd_surge_config|"
-    "$lnd_2_config|"
-    "$lnd_3_config|"
     "$lnd_4_config|"
     "$lnd_5_config|"
     "$lnd_6_config|"
+    "$lnd_7_config|"
   )
   num_of_nodes=${#nodes[@]}
   if [[ "$1" == "-s" ]]; then
@@ -59,8 +51,8 @@ function generate_node() {
 }
 
 function generate_amt() {
-    ceil=10000000
-    floor=10000
+    ceil=1000
+    floor=100
     amount=$(((RANDOM % $(($ceil- $floor))) + $floor))
     echo "$amount"
 }
@@ -93,37 +85,32 @@ function generate_memo() {
 }
 
 keysend() {
-    source=$(generate_node -s $lnd_3_config)
     amt=$(generate_amt)
-    printf "keysend:\n source %s\n  destination %s\n amt: %s\n" "$source" "$addr_lnd_3" "$amt"
-    send_payment=$($lncli $source  sendpayment -f --dest=$addr_lnd_3 --amt=$amt --keysend)
+    printf "keysend:\n source %s\n  destination %s\n amt: %s\n" "$lnd_7_config" "$addr_lnd_4" "$amt"
+    send_payment=$($lncli $lnd_7_config  sendpayment -f --dest=$addr_lnd_4 --amt=$amt --keysend)
     echo "$send_payment"
-    printf "completed send keysend from %s to %s\n" $source $addr_lnd_3
+    printf "completed send keysend from %s to %s\n" $lnd_7_config $addr_lnd_4
 }
 
 invoice() {
-   source=$(generate_node)
-   destination=$(generate_node)
+   #source=$(generate_node -s "$lnd_7_config")
+   destination=$(generate_node -s "$lnd_7_config")
    amt=$(generate_amt) 
    memo=$(generate_memo)
-   printf "invoice:\n source: %s\n destination: %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
+   printf "invoice:\n source: %s\n destination: %s\n amt: %s\n memo: %s\n" "$lnd_7_config" "$destination" "$amt" "$memo"
    payment_req=$($lncli $destination addinvoice --memo "$memo" --amt $amt | jq ".payment_request" -r )
    printf " payment_req %s\n" "$payment_req"
-   pay_invoice=$($lncli $source payinvoice -f $payment_req)
+   $lncli $lnd_7_config payinvoice -f $payment_req
    echo "$pay_invoice"
-   printf "completed send single htlc from %s to %s\n" $source $destination
+   printf "completed send single htlc from %s to %s\n" $lnd_7_config $destination
 }
 
 
 amp() {
-   source=$(generate_node)
-   printf "source %s\n" "$source"
-   destination=$(generate_node -s $source)
    amt=$(generate_amt)
-   printf "invoice:\n source %s\n destination %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
-   payment_req=$($lncli $source addinvoice --memo "$memo" --amt $amt --amp | jq ".payment_request" -r )
-   pay_amp=$($lncli $destination payinvoice -f $payment_req )
-   echo "$pay_amp"
+   printf "invoice:\n source %s\n destination %s\n amt: %s\n memo: %s\n" "$lnd_7_config" "$destination" "$amt" "$memo"
+   payment_req=$($lncli $lnd_7_config addinvoice --memo "$memo" --amt $amt --amp | jq ".payment_request" -r )
+   $lncli $lnd_5_config payinvoice -f $payment_req --amp
    printf "completed send amp (many htlcs) from %s to %s\n" $source $destination
 }
 
@@ -132,3 +119,4 @@ amp
 invoice
 
 printf "\n%s\n" "completed send_payments.sh"
+

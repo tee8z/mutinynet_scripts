@@ -71,3 +71,12 @@ tx_6=$(curl -X POST \
   -d '{"sats":"'"$amt_sats"'","address":"'"$addr_6"'"}' | jq -r '.txid')
 echo ""
 echo "lnd_6 address" $addr_6 " txid" $tx_6 " amt_sats" $amt_sats
+
+lnd_7_config="--lnddir=/mount/ssd/lnd/signet7 --rpcserver=localhost:10015 --macaroonpath=/mount/ssd/lnd/signet7/data/chain/bitcoin/signet/admin.macaroon"
+addr_7=$($lncli $lnd_7_config newaddress p2tr | jq -r '.address')
+tx_7=$(curl -X POST \
+  https://faucet.mutinynet.com/api/faucet \
+  -H 'Content-Type: application/json' \
+  -d '{"sats":"'"$amt_sats"'","address":"'"$addr_6"'"}' | jq -r '.txid')
+echo ""
+echo "lnd_7 address" $addr_7 " txid" $tx_7 " amt_sats" $amt_sats

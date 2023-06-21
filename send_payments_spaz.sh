@@ -93,42 +93,41 @@ function generate_memo() {
 }
 
 keysend() {
-    source=$(generate_node -s $lnd_3_config)
     amt=$(generate_amt)
-    printf "keysend:\n source %s\n  destination %s\n amt: %s\n" "$source" "$addr_lnd_3" "$amt"
-    send_payment=$($lncli $source  sendpayment -f --dest=$addr_lnd_3 --amt=$amt --keysend)
-    echo "$send_payment"
-    printf "completed send keysend from %s to %s\n" $source $addr_lnd_3
+    printf "keysend:\n source %s\n  destination %s\n" "$lnd_surge_config" "$addr_lnd_6"
+    $lncli $lnd_surge_config  sendpayment -f --dest=$addr_lnd_6 --amt=$amt --keysend
+    printf "completed send keysend from %s to %s" $lnd_surge_config $addr_lnd_6
 }
 
 invoice() {
-   source=$(generate_node)
-   destination=$(generate_node)
-   amt=$(generate_amt) 
+   source=$lnd_surge_config
+   destination=$(generate_node -s "$lnd_surge_config")
+   amt=$(generate_amt)
    memo=$(generate_memo)
    printf "invoice:\n source: %s\n destination: %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
    payment_req=$($lncli $destination addinvoice --memo "$memo" --amt $amt | jq ".payment_request" -r )
+   echo  "$payment_req"
    printf " payment_req %s\n" "$payment_req"
-   pay_invoice=$($lncli $source payinvoice -f $payment_req)
-   echo "$pay_invoice"
-   printf "completed send single htlc from %s to %s\n" $source $destination
+   $lncli $source payinvoice -f $payment_req
+   printf "completed send single htlc from %s to %s" $source $destination
 }
 
 
 amp() {
-   source=$(generate_node)
+   source=$(generate_node -s "$lnd_surge_config")
    printf "source %s\n" "$source"
-   destination=$(generate_node -s $source)
+   destination=$lnd_surge_config
    amt=$(generate_amt)
    printf "invoice:\n source %s\n destination %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
    payment_req=$($lncli $source addinvoice --memo "$memo" --amt $amt --amp | jq ".payment_request" -r )
-   pay_amp=$($lncli $destination payinvoice -f $payment_req )
-   echo "$pay_amp"
-   printf "completed send amp (many htlcs) from %s to %s\n" $source $destination
+   $lncli $destination payinvoice -f $payment_req --amp
+   printf "completed send amp (many htlcs) from %s to %s" $source $destination
 }
 
-keysend
-amp
-invoice
+keysend &
+invoice &
+amp &
 
-printf "\n%s\n" "completed send_payments.sh"
+wait
+
+printf "\n %s \n" "completed send_payments_spaz.sh"

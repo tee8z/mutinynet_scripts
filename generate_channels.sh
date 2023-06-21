@@ -146,5 +146,7 @@ close_channel(){
 }
 
 open_channel
+open_channel
+#open_channel
 close_channel
 

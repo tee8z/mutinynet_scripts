@@ -41,6 +41,10 @@ lnd_6_config="--lnddir=/mount/ssd/lnd/signet6 --rpcserver=localhost:10014 --maca
 addr_lnd_6=$($lncli $lnd_6_config getinfo | jq -r '.uris[0]')
 echo $addr_lnd_6
 
+lnd_7_config="--lnddir=/mount/ssd/lnd/signet7 --rpcserver=localhost:10015 --macaroonpath=/mount/ssd/lnd/signet7/data/chain/bitcoin/signet/admin.macaroon"
+addr_lnd_7=$($lncli $lnd_7_config getinfo | jq -r '.uris[0]')
+echo $addr_lnd_7
+
 
 connect_1_to_2=$($lncli $lnd_surge_config connect $addr_lnd_2)
 echo $connect_1_to_2
@@ -78,3 +82,16 @@ echo $connect_1_to_6
 
 connect_4_to_3=$($lncli $lnd_4_config connect $addr_lnd_3)
 echo $connect_4_to_3
+
+connect_7_to_2=$($lncli $lnd_7_config connect $addr_lnd_2)
+echo $connect_7_to_2
+
+connect_7_to_2=$($lncli $lnd_7_config connect $addr_lnd_5)
+echo $connect_7_to_5
+
+connect_7_to_2=$($lncli $lnd_7_config connect $addr_lnd_6)
+echo $connect_7_to_6
+
+connect_7_to_2=$($lncli $lnd_7_config connect $addr_lnd_3)
+echo $connect_7_to_3
+
