@@ -58,9 +58,42 @@ function generate_node() {
   echo "$node"
 }
 
+function generate_address() {
+  #printf "%s\n" "creating a node"
+  IFS='|'
+  nodes=(
+    "$addr_lnd_surge|"
+    "$addr_lnd_2|"
+    "$addr_lnd_3|"
+    "$addr_lnd_4|"
+    "$addr_lnd_5|"
+    "$addr_lnd_6|"
+  )
+  num_of_nodes=${#nodes[@]}
+  if [[ "$1" == "-s" ]]; then
+    skip_node=$2
+    #printf "skip_node %s\n" "$skip_node"
+    if [[ ! " ${nodes[@]} " =~ " $skip_node " && ! " ${nodes[@]} " =~ " $skip_node| "  ]]; then
+      printf "%s\n" "The specified node is not in the list."
+      exit 1
+    fi
+
+    nodes=("${nodes[@]/$skip_node}")
+    num_of_nodes=${#nodes[@]}
+  fi
+  pick=$((RANDOM % num_of_nodes))
+  node=${nodes[$pick]}
+  if [[ "${node: -1}" == "|" ]]; then
+    # Drop the last character
+    node="${node%?}"
+  fi
+
+  echo "$node"
+}
+
 function generate_amt() {
-    ceil=10000000
-    floor=10000
+    ceil=10000
+    floor=10
     amount=$(((RANDOM % $(($ceil- $floor))) + $floor))
     echo "$amount"
 }
@@ -93,17 +126,19 @@ function generate_memo() {
 }
 
 keysend() {
-    source=$(generate_node -s $lnd_3_config)
+    source=$(generate_node)
+    # not filtering here and accepting we will have some failed self payments
+    destination=$(generate_address)
     amt=$(generate_amt)
-    printf "keysend:\n source %s\n  destination %s\n amt: %s\n" "$source" "$addr_lnd_3" "$amt"
-    send_payment=$($lncli $source  sendpayment -f --dest=$addr_lnd_3 --amt=$amt --keysend)
+    printf "keysend:\n source %s\n  destination %s\n amt: %s\n" "$source" "$destination" "$amt"
+    send_payment=$($lncli $source  sendpayment -f --dest=$destination --amt=$amt --keysend)
     echo "$send_payment"
-    printf "completed send keysend from %s to %s\n" $source $addr_lnd_3
+    printf "completed send keysend from %s to %s\n" $source $destination
 }
 
 invoice() {
    source=$(generate_node)
-   destination=$(generate_node)
+   destination=$(generate_node -s "$source")
    amt=$(generate_amt) 
    memo=$(generate_memo)
    printf "invoice:\n source: %s\n destination: %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
@@ -118,7 +153,7 @@ invoice() {
 amp() {
    source=$(generate_node)
    printf "source %s\n" "$source"
-   destination=$(generate_node -s $source)
+   destination=$(generate_node -s "$source")
    amt=$(generate_amt)
    printf "invoice:\n source %s\n destination %s\n amt: %s\n memo: %s\n" "$source" "$destination" "$amt" "$memo"
    payment_req=$($lncli $source addinvoice --memo "$memo" --amt $amt --amp | jq ".payment_request" -r )

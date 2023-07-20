@@ -1,5 +1,5 @@
 #!/bin/bash
-amt_sats=100000  # Default value
+amt_sats=9000000  # Default value
 
 # Parse command-line options
 while getopts ":n:" opt; do
